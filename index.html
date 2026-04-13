@@ -79,13 +79,13 @@
         <div class="vista-loader">
             <div class="vista-progress"></div>
         </div>
-        <p style="color: #fff; font-size: 10px; margin-top: 20px; letter-spacing: 2px;">© Microsoft Corporation</p>
+        <p style="color: #fff; font-size: 10px; margin-top: 20px; letter-spacing: 2px;">© Blue Corporation</p>
     </div>
 
     <div id="desktop">
         <div class="notepad">
             <div class="title-bar">
-                <span>🗒️ poem.txt — Блокнот</span>
+                <span>🗒️ Блокнот</span>
                 <span style="background:#d4d0c8; color:#000; padding:0 5px; border:1px solid #fff;">X</span>
             </div>
             <div id="text-area" class="content">Чтение данных...</div>
@@ -123,13 +123,13 @@
             if (i < log.length) {
                 cmd.innerHTML += `<div>${log[i]}</div>`;
                 i++;
-                setTimeout(showCmd, 400);
+                setTimeout(showCmd, 70);
             } else {
                 setTimeout(() => {
                     beep();
                     cmd.style.display = 'none';
                     vista.style.display = 'flex';
-                    setTimeout(showDesktop, 3000); // Vista висит 3 сек
+                    setTimeout(showDesktop, 4000); // Vista висит 3 сек
                 }, 500);
             }
         }
