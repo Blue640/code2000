@@ -3,155 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blue // Код 2000х</title>
+    <title>Блокнот — poem.txt</title>
     <style>
-        :root {
-            --neon-blue: #00d4ff;
-            --dark-bg: #00050a;
-            --glass-cyan: rgba(0, 212, 255, 0.1);
-        }
-
-        body, html {
-            background-color: var(--dark-bg);
-            color: #e0f7fa;
-            font-family: "Tahoma", "Verdana", sans-serif;
+        body {
+            background-color: #008080; /* Тот самый классический бирюзовый цвет рабочего стола */
             margin: 0;
-            cursor: crosshair;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            font-family: "Tahoma", sans-serif;
         }
 
-        /* Загрузка */
-        #loader {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            color: var(--neon-blue);
-            font-family: "Courier New", monospace;
-            padding: 20px;
-            z-index: 1000;
-        }
-
-        /* Основной интерфейс */
-        .wrapper {
-            display: none;
+        /* Окно Блокнота */
+        .notepad {
+            width: 90%;
             max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            height: 80vh;
+            background: #f0f0f0;
+            border: 2px solid;
+            border-color: #fff #808080 #808080 #fff;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
         }
 
-        header {
-            text-align: center;
-            border: 2px solid var(--neon-blue);
-            background: var(--glass-cyan);
-            padding: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-
-        .window {
-            background: #c0c0c0; /* Классический серый Windows */
-            border: 3px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            color: #000;
-            margin-bottom: 20px;
-        }
-
-        .window-title {
+        /* Заголовок окна */
+        .title-bar {
             background: linear-gradient(90deg, #000080, #1084d0);
             color: white;
-            padding: 4px 10px;
-            font-weight: bold;
+            padding: 3px 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-weight: bold;
+            font-size: 13px;
         }
 
-        .window-content {
-            padding: 20px;
+        .title-bar-text {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .controls img { width: 14px; height: 14px; cursor: pointer; }
+
+        /* Меню блокнота */
+        .menu-bar {
+            display: flex;
+            gap: 10px;
+            padding: 2px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #808080;
+        }
+
+        .menu-bar span::first-letter { text-decoration: underline; }
+
+        /* Текстовое поле */
+        .content {
+            flex-grow: 1;
             background: #fff;
-            margin: 4px;
+            margin: 2px;
             border: 2px inset #fff;
-            min-height: 300px;
-            white-space: pre-wrap; /* Сохраняет переносы строк из файла */
-            font-size: 16px;
-            line-height: 1.5;
+            padding: 10px;
+            overflow-y: scroll;
+            font-family: "Lucida Console", "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            color: #000;
+            white-space: pre-wrap;
         }
 
-        footer {
-            text-align: center;
-            font-size: 10px;
-            color: var(--neon-blue);
-            margin-top: 50px;
-            text-transform: uppercase;
+        /* Скроллбар в стиле Win98/XP */
+        .content::-webkit-scrollbar { width: 16px; background: #f0f0f0; }
+        .content::-webkit-scrollbar-thumb { 
+            background: #d4d0c8; 
+            border: 2px solid;
+            border-color: #fff #808080 #808080 #fff;
         }
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <div id="log"></div>
-</div>
-
-<div class="wrapper" id="main">
-    <header>
-        <h1 style="margin:0; letter-spacing: 5px;">КОД 2000х</h1>
-        <small>PROJECT BY BLUE</small>
-    </header>
-
-    <div class="window">
-        <div class="window-title">
-            <span>POEM_READER.EXE</span>
-            <span style="font-family: Arial;">[?] [X]</span>
+    <div class="notepad">
+        <div class="title-bar">
+            <div class="title-bar-text">
+                <span>🗒️ poem.txt — Блокнот</span>
+            </div>
+            <div class="controls">
+                <span style="border: 1px solid #fff; padding: 0 5px; background: #d4d0c8; color: #000; font-size: 10px;">?</span>
+                <span style="border: 1px solid #fff; padding: 0 5px; background: #d4d0c8; color: #000; font-size: 10px;">X</span>
+            </div>
         </div>
-        <div id="poem-content" class="window-content">Загрузка данных из системы...</div>
+        
+        <div class="menu-bar">
+            <span>Файл</span>
+            <span>Правка</span>
+            <span>Формат</span>
+            <span>Вид</span>
+            <span>Справка</span>
+        </div>
+
+        <div id="text-area" class="content">Загрузка текста...</div>
     </div>
 
-    <footer>
-        System: GitHub Pages // Status: Online // User: Blue
-    </footer>
-</div>
-
-<script>
-    const logElement = document.getElementById('log');
-    const poemElement = document.getElementById('poem-content');
-    
-    // 1. Функция загрузки текста
-    async function fetchPoem() {
-        try {
-            // Файл должен лежать в той же папке на GitHub
-            const response = await fetch('poem.txt');
-            if (!response.ok) throw new Error('Файл не найден');
-            const text = await response.text();
-            poemElement.innerText = text;
-        } catch (err) {
-            poemElement.innerText = "ОШИБКА: Не удалось найти файл poem.txt в репозитории.";
+    <script>
+        async function loadText() {
+            const textArea = document.getElementById('text-area');
+            try {
+                // Подтягиваем твой poem.txt из репозитория
+                const response = await fetch('poem.txt');
+                if (!response.ok) throw new Error();
+                const text = await response.text();
+                textArea.innerText = text;
+            } catch (e) {
+                textArea.innerText = "Ошибка: Не удалось открыть файл poem.txt. Проверьте, что он лежит в корне репозитория.";
+            }
         }
-    }
 
-    // 2. Имитация загрузки
-    const steps = [
-        "> Инициализация BlueOS...",
-        "> Проверка связи с сервером...",
-        "> Чтение сектора 12.09.2001...",
-        "> Подключение к poem.txt...",
-        "> ГОТОВО."
-    ];
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-        if (currentStep < steps.length) {
-            logElement.innerHTML += `<div>${steps[currentStep]}</div>`;
-            currentStep++;
-        } else {
-            clearInterval(interval);
-            setTimeout(async () => {
-                await fetchPoem(); // Подтягиваем текст перед показом
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('main').style.display = 'block';
-            }, 1000);
-        }
-    }, 500);
-</script>
-
+        loadText();
+    </script>
 </body>
 </html>
-
