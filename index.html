@@ -6,55 +6,30 @@
     <title>Booting BlueOS...</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: monospace; }
-
-        /* Экран CMD */
         #boot-cmd { color: #ccc; padding: 20px; font-size: 14px; display: block; line-height: 1.5; }
-        
-        /* Экран Vista */
         #boot-vista { 
-            display: none; 
-            height: 100%; 
-            background: black; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
+            display: none; height: 100%; background: black; 
+            flex-direction: column; justify-content: center; align-items: center; 
         }
-        
-        /* Полоска загрузки Vista */
         .vista-loader {
-            width: 150px;
-            height: 12px;
-            border: 1px solid #333;
-            position: relative;
-            overflow: hidden;
-            background: #000;
+            width: 150px; height: 12px; border: 1px solid #333;
+            position: relative; overflow: hidden; background: #000;
         }
         .vista-progress {
-            width: 30px;
-            height: 100%;
+            width: 30px; height: 100%;
             background: linear-gradient(90deg, #001a33, #00d4ff, #001a33);
-            position: absolute;
-            animation: vista-slide 2s infinite linear;
+            position: absolute; animation: vista-slide 2s infinite linear;
         }
-        @keyframes vista-slide {
-            from { left: -40px; }
-            to { left: 150px; }
-        }
+        @keyframes vista-slide { from { left: -40px; } to { left: 150px; } }
 
-        /* Рабочий стол */
         #desktop {
-            display: none;
-            height: 100%;
-            background-color: #008080;
-            justify-content: center;
-            align-items: center;
+            display: none; height: 100%; background-color: #008080;
+            justify-content: center; align-items: center;
         }
-
-        /* Окно Блокнота */
         .notepad {
             width: 95%; max-width: 900px; height: 85vh;
-            background: #f0f0f0;
-            border: 2px solid; border-color: #fff #808080 #808080 #fff;
+            background: #f0f0f0; border: 2px solid; 
+            border-color: #fff #808080 #808080 #fff;
             display: flex; flex-direction: column;
             box-shadow: 4px 4px 20px rgba(0,0,0,0.5);
         }
@@ -66,7 +41,7 @@
         .content {
             flex-grow: 1; background: #fff; margin: 2px;
             border: 2px inset #fff; padding: 15px;
-            overflow-y: scroll; font-family: "Lucida Console", monospace;
+            overflow-y: scroll; font-family: "Lucida Console", "Courier New", monospace;
             white-space: pre-wrap; color: #000; font-size: 14px;
         }
     </style>
@@ -98,7 +73,6 @@
         const desktop = document.getElementById('desktop');
         const textArea = document.getElementById('text-area');
 
-        // Удлиненный лог загрузки
         const log = [
             "BlueOS (TM) BIOS v1.0.12.09",
             "Copyright (C) 2001-2026, Blue Corp.",
@@ -117,12 +91,14 @@
             "Starting system services ..."
         ];
 
+        // Новый читабельный Арт
         const asciiArt = `
-<span style="color:#add8e6">      ▄▄▄▄· ▄▄▌  ▄• ▄▌▄▄▄▄▄</span>
-<span style="color:#add8e6">      ▐█ ▀█▪██•  █▪██▌•██  </span>
-<span style="color:#00ffff">      ▐█▀▀█▄██▪  █▌▐█▌ ▐█.▪</span>
-<span style="color:#00ffff">      ██▄▪▐█▐█▌▐▌▐█▄█▌ ▐█▌·</span>
-<span style="color:#e0ffff">      ·▀▀▀▀ .▀▀▀  ▀▀▀  ▀▀▀ </span>
+<span style="color:#add8e6">   ____   _         _   _  _____ </span>
+<span style="color:#add8e6">  |  _ \\ | |       | | | ||  ___|</span>
+<span style="color:#00ffff">  | |_) || |       | | | || |__  </span>
+<span style="color:#00ffff">  |  _ < | |       | | | ||  __| </span>
+<span style="color:#e0ffff">  | |_) || |____   | |_| || |___ </span>
+<span style="color:#e0ffff">  |____/ |______|   \\___/ |_____|</span>
 <hr style="border:0; border-top:1px dashed #00ffff; margin:15px 0;">`;
 
         function beep() {
@@ -142,14 +118,13 @@
             if (line < log.length) {
                 cmd.innerHTML += `<div>${log[line]}</div>`;
                 line++;
-                // Задержка между строками увеличена для эффекта долгой загрузки
                 setTimeout(showCmd, 350); 
             } else {
                 setTimeout(() => {
                     beep();
                     cmd.style.display = 'none';
                     vista.style.display = 'flex';
-                    setTimeout(showDesktop, 4000); // Vista висит 4 секунды
+                    setTimeout(showDesktop, 4000); 
                 }, 1000);
             }
         }
@@ -162,7 +137,6 @@
                     typeWriter(text, tagEnd + 1, cb);
                 } else {
                     textArea.innerHTML += text[i];
-                    // Скорость печати: 1мс для быстрого, но заметного появления
                     setTimeout(() => typeWriter(text, i + 1, cb), 1); 
                 }
             } else if (cb) {
@@ -174,13 +148,11 @@
             vista.style.display = 'none';
             desktop.style.display = 'flex';
             
-            // Сначала печатаем Арт
             typeWriter(asciiArt, 0, async () => {
                 try {
                     const response = await fetch('poem.txt');
                     const text = await response.text();
                     textArea.innerHTML += "\n";
-                    // Затем печатаем сам стих
                     typeWriter(text, 0);
                 } catch (e) {
                     textArea.innerHTML += "\n[System Error: poem.txt not found]";
