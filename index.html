@@ -41,7 +41,7 @@
         .content {
             flex-grow: 1; background: #fff; margin: 2px;
             border: 2px inset #fff; padding: 15px;
-            overflow-y: scroll; font-family: "Lucida Console", "Courier New", monospace;
+            overflow-y: scroll; font-family: monospace;
             white-space: pre-wrap; color: #000; font-size: 14px;
         }
     </style>
@@ -114,20 +114,66 @@
         }
 
         let line = 0;
+        // Частоты для Vandalism
+const V = {
+    F3: 174.61, G3: 196.00, Ab3: 207.65, Bb3: 233.08,
+    C4: 261.63, Db4: 277.18, Eb4: 311.13, F4: 349.23
+};
+
+// Тот самый рифф: [частота, длительность в мс]
+const vandalism = [
+    [V.F3, 100], [V.F3, 100], [V.Ab3, 150], [0, 50], // Пауза (0) для четкости
+    [V.F3, 100], [V.F3, 100], [V.Bb3, 150], [0, 50],
+    [V.F3, 100], [V.F3, 100], [V.Db4, 150], [V.C4, 150],
+    [V.Bb3, 150], [V.Ab3, 150]
+];
+
+function playVandalism(index) {
+    if (index >= vandalism.length) return;
+
+    const [freq, duration] = vandalism[index];
+    
+    // Если частота 0 — это пауза, просто ждем
+    if (freq === 0) {
+        setTimeout(() => playVandalism(index + 1), duration);
+        return;
+    }
+
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'square'; // Оставляем квадрат для жесткости
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    // Делаем звук коротким и резким ("отрывистым")
+    gain.gain.setValueAtTime(0.1, ctx.currentTime); 
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration/1000));
+    osc.stop(ctx.currentTime + (duration/1000));
+
+    setTimeout(() => playVandalism(index + 1), duration + 20);
+}
+        
         function showCmd() {
-            if (line < log.length) {
-                cmd.innerHTML += `<div>${log[line]}</div>`;
-                line++;
-                setTimeout(showCmd, 350); 
-            } else {
-                setTimeout(() => {
-                    beep();
-                    cmd.style.display = 'none';
-                    vista.style.display = 'flex';
-                    setTimeout(showDesktop, 4000); 
-                }, 1000);
-            }
+        if (line < log.length) {
+            cmd.innerHTML += <div>${log[line]}</div>;
+            line++;
+            setTimeout(showCmd, 350);
+        } else {
+            setTimeout(() => {
+                // ЗАМЕНЯЕМ beep() НА ЭТО:
+                playVandalism(0); 
+                
+                cmd.style.display = 'none';
+                vista.style.display = 'flex';
+                setTimeout(showDesktop, 4000);
+            }, 1000);
         }
+    }
 
         function typeWriter(text, i, cb) {
             if (i < text.length) {
