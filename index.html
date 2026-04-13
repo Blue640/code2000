@@ -45,7 +45,7 @@
         .content {
             flex-grow: 1; background: #fff; margin: 2px;
             border: 2px inset #fff; padding: 15px;
-            overflow-y: scroll; font-family: "Lucida Console", "Courier New", monospace;
+            overflow-y: scroll; font-family: monospace;
             white-space: pre-wrap; color: #000; font-size: 14px;
         }
     </style>
@@ -53,7 +53,7 @@
 <body>
 
     <div id="start-screen" onclick="startSystem()">
-        <p style="font-size: 20px;">Привет! Спасибо что заглянул)</p>
+        <p style="font-size: 15px;">Привет! Спасибо что заглянул)</p>
         <p>Нажмите в любом месте для загрузки / Убавьте громкость</p>
     </div>
 
@@ -99,12 +99,12 @@
         ];
 
         const asciiArt = `
-<span style="color:#add8e6">   ____   _         _   _  _____ </span>
-<span style="color:#add8e6">  |  _ \\ | |       | | | ||  ___|</span>
-<span style="color:#00ffff">  | |_) || |       | | | || |__  </span>
-<span style="color:#00ffff">  |  _ < | |       | | | ||  __| </span>
-<span style="color:#e0ffff">  | |_) || |____   | |_| || |___ </span>
-<span style="color:#e0ffff">  |____/ |______|   \\___/ |_____|</span>
+<span style="color:#add8e6">   ____   _        _   _  _____ </span>
+<span style="color:#add8e6">  |  _ \\ | |      | | | ||  ___|</span>
+<span style="color:#00ffff">  | |_) || |      | | | || |__  </span>
+<span style="color:#00ffff">  |  _ < | |      | | | ||  __| </span>
+<span style="color:#e0ffff">  | |_) || |____  | |_| || |___ </span>
+<span style="color:#e0ffff">  |____/ |______|  \\___/ |_____|</span>
 <hr style="border:0; border-top:1px dashed #00ffff; margin:15px 0;">`;
 
         function startSystem() {
