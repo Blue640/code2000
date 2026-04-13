@@ -6,7 +6,15 @@
     <title>Booting BlueOS...</title>
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #000; font-family: monospace; }
-        #boot-cmd { color: #ccc; padding: 20px; font-size: 14px; display: block; line-height: 1.5; }
+        
+        /* Экран для обхода блокировки звука */
+        #start-screen {
+            height: 100%; display: flex; justify-content: center; align-items: center;
+            flex-direction: column; color: #00ffff; cursor: pointer; text-align: center;
+        }
+
+        #boot-cmd { color: #ccc; padding: 20px; font-size: 14px; display: none; line-height: 1.5; }
+        
         #boot-vista { 
             display: none; height: 100%; background: black; 
             flex-direction: column; justify-content: center; align-items: center; 
@@ -21,6 +29,7 @@
             position: absolute; animation: vista-slide 2s infinite linear;
         }
         @keyframes vista-slide { from { left: -40px; } to { left: 150px; } }
+        
         #desktop { display: none; height: 100%; background-color: #008080; justify-content: center; align-items: center; }
         .notepad {
             width: 95%; max-width: 900px; height: 85vh;
@@ -43,7 +52,13 @@
 </head>
 <body>
 
+    <div id="start-screen" onclick="startSystem()">
+        <p style="font-size: 20px;">[ СИСТЕМА ГОТОВА ]</p>
+        <p>Нажмите в любом месте для загрузки BlueOS</p>
+    </div>
+
     <div id="boot-cmd"></div>
+
     <div id="boot-vista">
         <div class="vista-loader"><div class="vista-progress"></div></div>
         <p style="color: #fff; font-size: 10px; margin-top: 20px; letter-spacing: 2px;">© Blue Corporation</p>
@@ -60,24 +75,24 @@
     </div>
 
     <script>
+        const startScreen = document.getElementById('start-screen');
         const cmd = document.getElementById('boot-cmd');
         const vista = document.getElementById('boot-vista');
         const desktop = document.getElementById('desktop');
         const textArea = document.getElementById('text-area');
+
+        // Создаем аудио-объект
+        const music = new Audio('music.mp3');
+        music.volume = 0.6;
 
         const log = [
             "BlueOS (TM) BIOS v1.0.12.09",
             "Copyright (C) 2001-2026, Blue Corp.",
             " ",
             "CPU: AMD Athlon(tm) II X4 640 Processor",
-            "Speed: 3.00 GHz",
             "Memory Test: 524288K OK",
-            " ",
             "Detecting primary master ... IDE Hard Disk",
-            "Detecting primary slave  ... None",
-            " ",
             "Mounting Poetry Partition [C:] ... DONE",
-            "Searching for boot sectors ... FOUND",
             "Loading poem.txt kernel ... DONE",
             "Initializing graphical shell ...",
             "Starting system services ..."
@@ -92,35 +107,10 @@
 <span style="color:#e0ffff">  |____/ |______|   \\___/ |_____|</span>
 <hr style="border:0; border-top:1px dashed #00ffff; margin:15px 0;">`;
 
-        const V = { F3: 174.61, Ab3: 207.65, Bb3: 233.08, Db4: 277.18, C4: 261.63 };
-        const vandalism = [
-            [V.F3, 100], [V.F3, 100], [V.Ab3, 150], [0, 50],
-            [V.F3, 100], [V.F3, 100], [V.Bb3, 150], [0, 50],
-            [V.F3, 100], [V.F3, 100], [V.Db4, 150], [V.C4, 150],
-            [V.Bb3, 150], [V.Ab3, 150]
-        ];
-
-        function playVandalism(index) {
-            if (index >= vandalism.length) return;
-            const [freq, duration] = vandalism[index];
-            if (freq === 0) {
-                setTimeout(() => playVandalism(index + 1), duration);
-                return;
-            }
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(freq, ctx.currentTime);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start();
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (duration/1000));
-                osc.stop(ctx.currentTime + (duration/1000));
-            } catch(e) {}
-            setTimeout(() => playVandalism(index + 1), duration + 20);
+        function startSystem() {
+            startScreen.style.display = 'none';
+            cmd.style.display = 'block';
+            showCmd();
         }
 
         let line = 0;
@@ -128,10 +118,12 @@
             if (line < log.length) {
                 cmd.innerHTML += `<div>${log[line]}</div>`;
                 line++;
-                setTimeout(showCmd, 350); 
+                setTimeout(showCmd, 300); 
             } else {
                 setTimeout(() => {
-                    playVandalism(0);
+                    // ВКЛЮЧАЕМ МУЗЫКУ ЗДЕСЬ
+                    music.play().catch(e => console.error("Ошибка аудио:", e));
+                    
                     cmd.style.display = 'none';
                     vista.style.display = 'flex';
                     setTimeout(showDesktop, 4000); 
@@ -161,10 +153,11 @@
                     const text = await response.text();
                     textArea.innerHTML += "\n";
                     typeWriter(text, 0);
-                } catch (e) { textArea.innerHTML += "\n[Error: poem.txt not found]"; }
+                } catch (e) { 
+                    textArea.innerHTML += "\n[System Message: Ready for input]"; 
+                }
             });
         }
-        window.onload = showCmd;
     </script>
 </body>
 </html>
